@@ -105,3 +105,20 @@ interface IInstantiationService {
 #### 使用有向图对依赖关系建模
 
 在外部调用容器中未创建的接口实现类实例时，将以该实现类作为起点，使用有向图对类的依赖关系进行建模。有向图中可会形成循环，代码中使用了循环次数不大于 150 次的启发式算法来判断是否存在循环依赖。
+
+## Object.create(null) 与 {} 字面量的区别
+
+### Object.create() 的定义
+
+Object.create(proto, [propertiesObject])
+
+* proto：新创建对象的原型对象。
+* propertiesObject：可选。要添加到新对象的可枚举的属性。
+
+### 区别
+
+{} 字面量原项链指向 Object，继承了 Object 对象的方法。Object.create(null) 原型链指向 null，不继承任何方法。
+
+### 何时使用 Object.create(null)
+
+当我们需要一个数据字典时可使用该方法创建一个对象，而不必在使用 for...in 语法时使用 hasOwnProperty 来判断该属性位于对象中还是原型连中。
