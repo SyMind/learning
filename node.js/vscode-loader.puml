@@ -1,0 +1,87 @@
+@startuml vscode-loader
+class Environment {
+    isWindows: boolean
+    isNode: boolean
+    isElectronRenderer: boolean
+    isWebWorker: boolean
+}
+
+class ModuleManager {
+    - _env: Environment
+    - _scriptLoader: IScriptLoader
+    - _loaderAvailableTimestamp: number
+    - _defineFunc: IDefineFunc
+    - _requireFunc: IRequireFunc
+    - _moduleIdProvider: ModuleIdProvider
+    - _config: Configuration
+    - _modules2: Module[]
+    - _knownModules2: boolean[]
+    - _inverseDependencies2: (ModuleId[] | null)[]
+    - _inversePluginDependencies2: Map<ModuleId, PluginDependency[]>
+    - _currentAnnonymousDefineCall: IDefineCall | null
+    - _recorder: ILoaderEventRecorder | null
+    - _buildInfoPath: string[]
+    - _buildInfoDefineStack: (string | null)[]
+    - _buildInfoDependencies: string[][]
+
+    reset(): ModuleManager
+    getGlobalAMDDefineFunc(): IDefineFunc
+    getGlobalAMDRequireFunc(): IRequireFunc
+    getBuildInfo(): IBuildModuleInfo
+    getRecorder(): ILoaderEventRecorder
+    getLoaderEvents(): LoaderEvent
+    enqueueDefineAnonymousModule(dependencies: string[], callback: any): void
+    defineModule(strModuleId: string, dependencies: string[], callback: any, errorback: ((err: AnnotatedError) => void) | null | undefined, stack: string | null, moduleIdResolver: ModuleIdResolver = new ModuleIdResolver(strModuleId)): void
+    synchronousRequire(_strModuleId: string, moduleIdResolver: ModuleIdResolver): any
+    configure(params: IConfigurationOptions, shouldOverwrite: boolean): void
+    getConfig(): Configuration 
+}
+
+interface IScriptLoader {
+    load(moduleManager: IModuleManager, scriptPath: string, loadCallback: () => void, errorCallback: (err: any) => void): void
+}
+
+class OnlyOnceScriptLoader {
+    - _evn: Environment
+    - _scriptLoader: IScriptLoader | null
+    - _callbackMap: { [scriptSrc: string]: IScriptCallbacks[] }
+
+    constructor(env: Envrionment)
+    load(moduleManager: IModuleManager, scriptPath: string, loadCallback: () => void, errorCallback: (err: any) => void): void
+    - triggerCallback(scriptSrc: string): void
+    - triggerErrorback(scriptSrc: string, err: any): void
+}
+
+class BrowserScriptLoader {
+
+}
+
+class WorkerScriptLoader {
+
+}
+
+class NodeScriptLoader {
+    - _BOM = 0xFEFF
+    - _PREFIX = '(function (require, define, __filename, __dirname) { '
+    - _SUFFIX = '\n});'
+    - _env: Environment
+    - _didPatchNodeRequire: boolean
+    - _didInitialize: boolean
+    - _fs: INodeFS
+    - _vm: INodeVM
+    - _path: INodePath
+    - _crypto: INodeCrypto
+
+    constructor(env: Environment)
+    - _init(nodeRequire: INodeRequire): void
+    - _initNodeRequire(nodeRequire: INodeRequire, moduleManager: IModuleManager): void
+    load(moduleManager: IModuleManager, scriptPath: string, loadCallback: () => void, errorCallback: (err: any) => void): void
+    - _createAndEvalScript(moduleManager: IModuleManager, contents: string, options: INodeVMScriptOptions, callback: () => void, errorback: (err: any) => void): INodeVMScript
+    - _getElectronRendererScriptPathOrUri(path: string)
+    - _getCachedDataPath(config: INodeCachedDataConfiguration, filename: string): string
+    - _handleCachedData(script: INodeVMScript, scriptSource: string, cachedDataPath: string, createCachedData: boolean, moduleManager: IModuleManager): void
+    - _createAndWriteCachedData(script: INodeVMScript, scriptSource: string, cachedDataPath: string, moduleManager: IModuleManager): void
+    - _readSourceAndCachedData(sourcePath: string, cachedDataPath: string | undefined, recorder: ILoaderEventRecorder, callback: (err?: any, source?: string, cachedData?: Buffer, hashData?: Buffer) => any): void
+    - _verifyCachedData(script: INodeVMScript, scriptSource: string, cachedDataPath: string, hashData: Buffer | undefined, moduleManager: IModuleManager): void
+}
+@enduml
