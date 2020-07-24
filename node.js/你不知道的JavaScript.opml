@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+	<head>
+		<dateCreated>Tue Jul 21 2020 08:29:08 GMT+0800 (中国标准时间)</dateCreated>
+		<dateModified>Tue Jul 21 2020 08:29:08 GMT+0800 (中国标准时间)</dateModified>
+	</head>
+	<body>
+		<outline text="你不知道的JavaScript">
+			<outline text="深入编程">
+				<outline text="代码"></outline>
+				<outline text="表达式"></outline>
+				<outline text="运算符"></outline>
+				<outline text="值与类型"></outline>
+				<outline text="代码注释"></outline>
+				<outline text="变量"></outline>
+				<outline text="块"></outline>
+				<outline text="条件判断"></outline>
+				<outline text="循环"></outline>
+				<outline text="函数">
+					<outline text="词法作用域"></outline>
+				</outline>
+			</outline>
+			<outline text="深入JavaScript">
+				<outline text="值与类型">
+					<outline text="内置类型">
+						<outline text="字符串"></outline>
+						<outline text="数字"></outline>
+						<outline text="布尔型"></outline>
+						<outline text="null和undefined"></outline>
+						<outline text="对象">
+							<outline text="数组"></outline>
+							<outline text="函数"></outline>
+						</outline>
+						<outline text="符号"></outline>
+					</outline>
+					<outline text="内置类型方法"></outline>
+					<outline text="值的比较">
+						<outline text="类型转换"></outline>
+						<outline text="真与假"></outline>
+						<outline text="相等"></outline>
+						<outline text="不等关系">
+							<outline text="没有与“严格相等”===类似的、不允许类型转换的“严格不等关系”运算符"></outline>
+						</outline>
+					</outline>
+				</outline>
+				<outline text="变量">
+					<outline text="提升"></outline>
+					<outline text="嵌套作用域"></outline>
+				</outline>
+				<outline text="条件判断"></outline>
+				<outline text="严格模式"></outline>
+				<outline text="作为值的函数">
+					<outline text="立即调用函数表达式"></outline>
+					<outline text="闭包"></outline>
+				</outline>
+				<outline text="this标识符"></outline>
+				<outline text="原型"></outline>
+			</outline>
+			<outline text="深入“你不知道的JavaScript”系列">
+				<outline text="作用域和闭包"></outline>
+				<outline text="this和对象原型"></outline>
+				<outline text="类型和语法"></outline>
+				<outline text="异步和性能"></outline>
+			</outline>
+			<outline text="ES？现在与未来">
+				<outline text="版本">
+					<outline text="第一个流行起来的 JavaScript 版本是 ES3"></outline>
+					<outline text="2009年，ES5正式发布，在当代浏览器的进化和爆发中称为JavaScript广泛使用的标准"></outline>
+					<outline text="在ES6规范发展后期，出现了这样的方案：有人建议未来的版本应该改成基于年份，比如ES2016来标示2016年结束之前敲定的任何版本的规范"></outline>
+				</outline>
+				<outline text="transpiling">
+					<outline text="transformation+compiling"></outline>
+					<outline text="shim/polyfill"></outline>
+				</outline>
+			</outline>
+			<outline text="语法">
+				<outline text="块作用域声明">
+					<outline text="let声明"></outline>
+					<outline text="const声明"></outline>
+					<outline text="块作用域函数"></outline>
+				</outline>
+				<outline text="spread/rest"></outline>
+				<outline text="默认参数值"></outline>
+				<outline text="解构"></outline>
+				<outline text="对象字面量扩展"></outline>
+				<outline text="模板字面量"></outline>
+				<outline text="箭头函数"></outline>
+				<outline text="for..of循环"></outline>
+				<outline text="正则表达式">
+					<outline text="Unicode标识"></outline>
+					<outline text="定点标识"></outline>
+				</outline>
+				<outline text="Unicode">
+					<outline text="基本多语言平面（Basic Multilingual Plane，BMP）">
+						<outline text="Unicode字符范围从0x0000到0xFFFF，包含可能看到和接触到的所有标准打印字符"></outline>
+					</outline>
+					<outline text="星形符号（astral symbal）">
+						<outline text="在BMP集之外还有很多其他扩展Unicode字符，范围直到0x10FFFF"></outline>
+					</outline>
+					<outline text="支持Unicode的字符串运算"></outline>
+					<outline text="字符定位"></outline>
+					<outline text="Unicode标识符名"></outline>
+				</outline>
+			</outline>
+		</outline>
+	</body>
+</opml>
