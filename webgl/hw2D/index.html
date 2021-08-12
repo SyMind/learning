@@ -1,0 +1,177 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas id="webgl" width="400" height="400">
+        Please use a browser that supports "canvas"
+    </canvas>
+
+    <script src="./lib/webgl-utils.js"></script>
+    <script src="./lib/webgl-debug.js"></script>
+    <script src="./lib/cuon-utils.js"></script>
+    <script>
+        var sqVertVbo, sqColorVbo, sqTexVbo;
+
+        function initVBOs(gl) {
+            var sqVerts = new Float32Array([
+                -.5, -.5,
+                .5, .5,
+                .5, -.5,
+
+                -.5, -.5,
+                -.5, .5,
+                .5, .5
+            ]);
+
+            var sqCol = new Float32Array([
+                1, 0, 0,
+                0, 1, 1,
+                0, 0, 1,
+
+                1, 0, 0,
+                0, 1, 0,
+                0, 1, 1
+            ]);
+
+            var sqTex = new Float32Array([
+                0, 0,
+                1, 1,
+                1, 0,
+
+                0, 0,
+                0, 1,
+                1, 1
+            ]);
+
+            sqVertVbo = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, sqVertVbo);
+            gl.bufferData(gl.ARRAY_BUFFER, sqVerts, gl.STATIC_DRAW);
+
+            sqColorVbo = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, sqColorVbo);
+            gl.bufferData(gl.ARRAY_BUFFER, sqCol, gl.STATIC_DRAW);
+
+            sqTexVbo = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, sqTexVbo);
+            gl.bufferData(gl.ARRAY_BUFFER, sqTex, gl.STATIC_DRAW);
+            var aTexCoord = gl.getAttribLocation(gl.program, 'aTexCoord');
+            gl.vertexAttribPointer(aTexCoord, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(aTexCoord);
+        }
+
+        function loadTexture(gl, texture, uTexUnit0, image) {
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+
+            gl.uniform1i(uTexUnit0, 0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 6);
+        }
+
+        function initTextures(gl) {
+            var texture = gl.createTexture()
+            var uTexUnit0 = gl.getUniformLocation(gl.program, 'uTexUnit0');
+            var image = new Image();
+            image.onload = () => loadTexture(gl, texture, uTexUnit0, image);
+            image.src = './sky.jpg';
+        }
+
+        function drawObj(gl) {
+            gl.bindBuffer(gl.ARRAY_BUFFER, sqVertVbo);
+            var aVertex = gl.getAttribLocation(gl.program, 'aVertex');
+            gl.vertexAttribPointer(aVertex, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(aVertex);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, sqColorVbo);
+            var aColor = gl.getAttribLocation(gl.program, 'aColor');
+            gl.vertexAttribPointer(aColor, 3, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(aColor);
+        }
+
+        // Vertex shader program
+        var VSHADER_SOURCE = `
+            attribute vec2 aVertex;
+            attribute vec3 aColor;
+            attribute vec2 aTexCoord;
+
+            varying vec3 vColor;
+            varying vec2 vTexCoord;
+
+            void main() {
+                gl_Position = vec4(aVertex.x, aVertex.y, 0,1);
+                vColor = aColor;
+                vTexCoord = aTexCoord;
+            }
+        `;
+
+        // Fragment shader program
+        var FSHADER_SOURCE = `
+            precision mediump float;
+
+            uniform sampler2D uTexUnit0;
+
+            varying vec2 vTexCoord;
+            varying vec3 vColor;
+
+            void main() {
+                vec4 texColor0 = vec4(vColor.x, vColor.y, vColor.z, 1);
+                vec4 texColor1 = texture2D(uTexUnit0, vTexCoord);
+                gl_FragColor = texColor1;
+            }
+        `;
+
+        function main() {
+            // Retrieve <canvas> element
+            var canvas = document.getElementById('webgl');
+
+            // Get the rendering context for WebGL
+            var gl = getWebGLContext(canvas);
+            if (!gl) {
+                console.log('Failed to get the rendering context for WebGL');
+                return;
+            }
+
+            // Initialize shaders
+            if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
+                console.log('Failed to intialize shaders.');
+                return;
+            }
+
+            initVBOs(gl);
+            initTextures(gl);
+            drawObj(gl);
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+            // Clear <canvas>
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            // Draw
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+        }
+
+        main();
+
+
+        function fetchPpm() {
+            fetch('./reachup.ppm')
+                .then(res => res.arrayBuffer())
+                .then(buffer => {
+                    console.log(buffer)
+                })
+        }
+        fetchPpm();
+    </script>
+</body>
+
+</html>
