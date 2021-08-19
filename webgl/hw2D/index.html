@@ -16,7 +16,8 @@
     <script src="./lib/webgl-debug.js"></script>
     <script src="./lib/cuon-utils.js"></script>
     <script>
-        var sqVertVbo, sqColorVbo, sqTexVbo;
+        var sqVertVbo, sqColorVbo, sqTexVbo, uVertexScale;
+        var objScale = 1;
 
         function initVBOs(gl) {
             var sqVerts = new Float32Array([
@@ -97,10 +98,17 @@
             var aColor = gl.getAttribLocation(gl.program, 'aColor');
             gl.vertexAttribPointer(aColor, 3, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(aColor);
+
+            uVertexScale = gl.getUniformLocation(gl.program, "uVertexScale");
+            gl.uniform1f(uVertexScale, objScale);
         }
 
         // Vertex shader program
         var VSHADER_SOURCE = `
+            precision mediump float;
+
+            uniform float uVertexScale;
+
             attribute vec2 aVertex;
             attribute vec3 aColor;
             attribute vec2 aTexCoord;
@@ -109,7 +117,7 @@
             varying vec2 vTexCoord;
 
             void main() {
-                gl_Position = vec4(aVertex.x, aVertex.y, 0,1);
+                gl_Position = vec4(aVertex.x * uVertexScale, aVertex.y, 0, 1);
                 vColor = aColor;
                 vTexCoord = aTexCoord;
             }
@@ -119,6 +127,7 @@
         var FSHADER_SOURCE = `
             precision mediump float;
 
+            uniform float uVertexScale;
             uniform sampler2D uTexUnit0;
 
             varying vec2 vTexCoord;
@@ -127,13 +136,39 @@
             void main() {
                 vec4 texColor0 = vec4(vColor.x, vColor.y, vColor.z, 1);
                 vec4 texColor1 = texture2D(uTexUnit0, vTexCoord);
-                gl_FragColor = texColor1;
+
+                float lerper = clamp(uVertexScale, 0., 1.);
+                gl_FragColor =(lerper)*texColor1 + (1.-lerper)*texColor0;
             }
         `;
 
         function main() {
             // Retrieve <canvas> element
             var canvas = document.getElementById('webgl');
+
+            var isMouseDown = false;
+            var startX = 0;
+            canvas.addEventListener('mousedown', event => {
+                isMouseDown = true;
+                startX = event.clientX;;
+            })
+            document.addEventListener('mouseup', event => {
+                isMouseDown = false;
+            })
+            document.addEventListener('mousemove', event => {
+                if (!isMouseDown) {
+                    return;
+                }
+                const deta = startX - event.clientX;
+                uVertexScale = gl.getUniformLocation(gl.program, "uVertexScale");
+                console.log(1 + deta / 1000);
+                gl.uniform1f(uVertexScale, 1 + deta / 1000);
+                // Clear <canvas>
+                gl.clear(gl.COLOR_BUFFER_BIT);
+
+                // Draw
+                gl.drawArrays(gl.TRIANGLES, 0, 6);
+            })
 
             // Get the rendering context for WebGL
             var gl = getWebGLContext(canvas);
@@ -161,16 +196,6 @@
         }
 
         main();
-
-
-        function fetchPpm() {
-            fetch('./reachup.ppm')
-                .then(res => res.arrayBuffer())
-                .then(buffer => {
-                    console.log(buffer)
-                })
-        }
-        fetchPpm();
     </script>
 </body>
 
